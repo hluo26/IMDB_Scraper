@@ -15,11 +15,13 @@ year =[]
 #monitoring
 request_num = 0
 
+#split movie name and published year
 def split(title):
     res = title.split("(")
     t = res[0]
     return t
 
+#print results of web scraping
 def print_frame():
     test_df = pd.DataFrame({
     'movie':current_movies,
@@ -31,12 +33,13 @@ def print_frame():
     })
     print(test_df.info)
 
+#using BeautifulSoup to find all appropriate tags, then extract data from ResultSet
 def main():
     link = "https://www.imdb.com/movies-coming-soon/"
     html = urllib.request.urlopen(link).read()
     soup = BeautifulSoup(html,"html.parser")
     materials = soup.find_all('div',class_="list_item")
-    count = 0
+    count = 0 #index
     meta = 0
     if(len(materials)>=1):
         #existed = [True] * len(materials)
@@ -47,6 +50,7 @@ def main():
                 meta = materials[count].find('span',class_="metascore").text
             else: meta = None
             direct = materials[count].find('span',itemprop="name").text
+            #check duplicated movies in list
             if(name not in current_movies):
                 current_movies.append(name)
                 director.append(direct[1:])
@@ -60,6 +64,7 @@ def main():
             else: count+=1
     print_frame()
 
+#seeking for more data from the url of each movie
 def url_seek(url):
     url = "https://www.imdb.com/" + url
     html = urllib.request.urlopen(url).read()
