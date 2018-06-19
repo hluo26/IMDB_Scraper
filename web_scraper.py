@@ -1,5 +1,7 @@
 import urllib.request
 from bs4 import BeautifulSoup
+from datetime import datetime
+import time
 import re
 import pandas as pd
 
@@ -13,7 +15,8 @@ year =[]
 #existed = []
 
 #monitoring
-request_num = 0
+start_time = None
+end_time = None
 
 #split movie name and published year
 def split(title):
@@ -33,8 +36,23 @@ def print_frame():
     })
     print(test_df.info)
 
-#using BeautifulSoup to find all appropriate tags, then extract data from ResultSet
+#monitor function to count time and reload data after 24 hours
 def main():
+    start_time = time.time()
+    load_data()
+    end_time = time.time()
+    print("Cost ",end_time-start_time," seconds")
+    while(True):
+        #Set time as 60 seconds for test
+        time.sleep(60)
+        start_time = time.time()
+        load_data()
+        end_time = time.time()
+        print("Cost ",end_time-start_time," seconds")
+
+
+#using BeautifulSoup to find all appropriate tags, then extract data from ResultSet
+def load_data():
     link = "https://www.imdb.com/movies-coming-soon/"
     html = urllib.request.urlopen(link).read()
     soup = BeautifulSoup(html,"html.parser")
